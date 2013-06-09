@@ -7,6 +7,11 @@
   (add-to-list 'load-path
                (format "%s/.emacs.d/site-lisp" (getenv "HOME"))))
 
+(defun bc-setup-customization ()
+  (setq custom-file
+        (format "%s/.emacs.d/init-customization.el" (getenv "HOME")))
+  (load custom-file))
+
 (defun bc-setup-package-manager ()
   (require 'package)
   (add-to-list 'package-archives
@@ -29,6 +34,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup search and navigation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun bc-ido-find-tag ()
+  "Find a tag using ido"
+  (interactive)
+  (tags-completion-table)
+  (let (tag-names)
+    (mapatoms (lambda (x)
+                (push (prin1-to-string x t) tag-names))
+              tags-completion-table)
+    (find-tag (ido-completing-read "Tag: " tag-names))))
+
+(defun bc-ido-find-file-in-tag-files ()
+  (interactive)
+  (save-excursion
+    (let ((enable-recursive-minibuffers t))
+      (visit-tags-table-buffer))
+    (find-file
+     (expand-file-name
+      (ido-completing-read
+       "Project file: " (tags-table-files) nil t)))))
+
 (defun bc-setup-search-and-navigation ()
   (setq dabbrev-case-fold-search nil)
   (setq ffip-patterns
@@ -169,6 +194,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (bc-setup-load-path)
 (bc-setup-package-manager)
+(bc-setup-customization)
 (bc-setup-input)
 (bc-setup-search-and-navigation)
 (bc-setup-key-bindings)
@@ -246,21 +272,3 @@
 ;; Start server
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (server-start)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Customization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "4dacec7215677e4a258e4529fac06e0231f7cdd54e981d013d0d0ae0af63b0c8" "36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default)))
- '(ecb-options-version "2.40")
- '(ede-project-directories (quote nil)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
