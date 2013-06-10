@@ -97,7 +97,6 @@
   (global-set-key (kbd "\C-c c") 'compile)
   (global-set-key (kbd "\C-c d") 'semantic-ia-fast-jump)
   (global-set-key (kbd "\C-c f") 'find-name-dired)
-  (global-set-key (kbd "\C-c h") 'bc-set-current-frame-full-height)
   (global-set-key (kbd "\C-c k") 'clipboard-kill-ring-save)
   (global-set-key (kbd "\C-c g") 'rgrep)
   (global-set-key (kbd "\C-c j") 'idomenu)
@@ -105,7 +104,15 @@
   (global-set-key (kbd "\C-c y") 'clipboard-yank)
   (global-set-key (kbd "\C-c x") 'er/expand-region)
   (global-set-key (kbd "\C-c n") 'senator-next-tag)
-  (global-set-key (kbd "\C-c p") 'senator-previous-tag))
+  (global-set-key (kbd "\C-c p") 'senator-previous-tag)
+  ;; TODO Extract evil key setup into a separate function
+  (require 'key-chord)
+  (setq key-chord-two-keys-delay 0.5)
+  (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+  (key-chord-mode 1)
+  (define-key evil-normal-state-map "c" nil)
+  (define-key evil-motion-state-map "c" 'execute-extended-command)
+  (define-key evil-ex-map "o" 'other-window))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup wrapping
@@ -150,7 +157,7 @@
 
   (line-number-mode 1)
   (column-number-mode 1)
-  (load-theme 'solarized-dark))
+  (load-theme 'monokai))
 
 (defun bc-setup-fonts ()
    (cond ((eq system-type 'darwin)
@@ -197,6 +204,9 @@
 (bc-setup-customization)
 (bc-setup-input)
 (bc-setup-search-and-navigation)
+;; TODO Load all required files in a more structured manner
+(load "init-aliases")
+(bc-setup-aliases)
 (bc-setup-key-bindings)
 (bc-setup-wrapping)
 (bc-setup-saving)
@@ -210,7 +220,8 @@
 ;; Setup hooks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-prog-mode-hook ()
-  (flex-isearch-mode 1))
+  (flex-isearch-mode 1)
+  (fci-mode 1))
 (add-hook 'prog-mode-hook 'bc-prog-mode-hook)
 
 (defun bc-c-mode-common-hook ()
