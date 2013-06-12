@@ -45,6 +45,7 @@
     (find-tag (ido-completing-read "Tag: " tag-names))))
 
 (defun bc-ido-find-file-in-tag-files ()
+  "Find a file in the current tags table using ido"
   (interactive)
   (save-excursion
     (let ((enable-recursive-minibuffers t))
@@ -53,6 +54,30 @@
      (expand-file-name
       (ido-completing-read
        "Project file: " (tags-table-files) nil t)))))
+
+(defun bc-list-tags-current-buffer ()
+  "List the tags in the current buffer"
+  (interactive)
+  (require 'cl)
+  (save-excursion
+    (let ((current-file (expand-file-name (buffer-file-name))))
+      ;; TODO Do I need to visit the tags table buffer
+      (visit-tags-table-buffer)
+      (let ((tags-files
+             (remove-if-not (lambda (tags-file)
+                              (string-equal (expand-file-name tags-file)
+                                            current-file))
+                            (tags-table-files))))
+        (if (>= (length tags-files) 0)
+            ;; TODO car does not seem to work here. Why?
+            (let ((tags-file (elt tags-files 0)))
+              (list-tags tags-file)))))))
+
+(defadvice visit-tags-table (before bc-reset-tags)
+  "Clear the tags completion table and the current tags table
+before visiting a new tags table"
+  (setq tags-completion-table nil)
+  (tags-reset-tags-tables))
 
 (defun bc-setup-search-and-navigation ()
   (setq dabbrev-case-fold-search nil)
@@ -246,7 +271,8 @@
 (add-hook 'js-mode-hook 'bc-js-mode-hook)
 
 (defun bc-lisp-mode-hook ()
-  (setq indent-tabs-mode nil))
+  (setq indent-tabs-mode nil)
+  (show-paren-mode 1))
 (add-hook 'lisp-mode-hook 'bc-lisp-mode-hook)
 
 (defun bc-python-mode-hook ()
