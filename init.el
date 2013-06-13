@@ -73,6 +73,10 @@
             (let ((tags-file (elt tags-files 0)))
               (list-tags tags-file)))))))
 
+(defun bc-ido-find-tag-current-buffer ()
+  "Find a tag in the current buffer"
+  )
+
 (defadvice visit-tags-table (before bc-reset-tags)
   "Clear the tags completion table and the current tags table
 before visiting a new tags table"
@@ -101,14 +105,30 @@ before visiting a new tags table"
   (setq ido-everywhere t)
   (ido-mode 1)
 
+  (require 'smex)
+  (smex-initialize)
+
   (require 'semantic/ia)
   (semantic-mode 1)
   (global-ede-mode t)
-  (load "init-ede-projects"))
+  (load "init-ede-projects")
+
+  (ad-activate 'visit-tags-table))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup key bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun bc-find-next-tag ()
+  "Find the next occurence of the last tag to be found"
+  (interactive)
+  (message "%s" last-tag)
+  (find-tag last-tag t nil))
+
+(defun bc-find-previous-tag ()
+  "Find the previous occurence of the last tag to be found"
+  (interactive)
+  (find-tag last-tag '- nil))
+
 (defun bc-setup-key-bindings ()
   (global-set-key (kbd "<f5>") 'er/expand-region)
   (global-set-key (kbd "<f6>") 'ace-jump-mode)
@@ -135,9 +155,16 @@ before visiting a new tags table"
   (setq key-chord-two-keys-delay 0.5)
   (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
   (key-chord-mode 1)
-  (define-key evil-normal-state-map "c" nil)
-  (define-key evil-motion-state-map "c" 'execute-extended-command)
-  (define-key evil-ex-map "o" 'other-window))
+  (define-key evil-motion-state-map ":" nil)
+  (define-key evil-motion-state-map ";" nil)
+  (define-key evil-motion-state-map ":" 'smex)
+  (define-key evil-motion-state-map ";" 'evil-ex)
+  (define-key evil-ex-map "ib" 'ido-switch-buffer)
+  (define-key evil-ex-map "id" 'ido-dired)
+  (define-key evil-ex-map "ie" 'ido-find-file)
+  (define-key evil-ex-map "o" 'other-window)
+  (define-key evil-ex-map "n" 'bc-find-next-tag)
+  (define-key evil-ex-map "p" 'bc-find-previous-tag))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup wrapping
@@ -188,7 +215,7 @@ before visiting a new tags table"
    (cond ((eq system-type 'darwin)
          (set-frame-font "Menlo-12" nil t))
         ((eq system-type 'gnu/linux)
-         (set-frame-font "Ubuntu Mono-11" nil t))
+         (set-frame-font "Liberation Mono-10" nil t))
         ((eq system-type 'windows-nt)
          (set-frame-font "Consolas-10" nil t))))
 
@@ -246,6 +273,7 @@ before visiting a new tags table"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-prog-mode-hook ()
   (flex-isearch-mode 1)
+  (setq fill-column 80)
   (fci-mode 1))
 (add-hook 'prog-mode-hook 'bc-prog-mode-hook)
 
@@ -304,8 +332,3 @@ before visiting a new tags table"
 ;; Save desktop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (desktop-save-mode 1)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Start server
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(server-start)
