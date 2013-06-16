@@ -221,8 +221,7 @@ before visiting a new tags table"
   (menu-bar-mode -1)
 
   (line-number-mode 1)
-  (column-number-mode 1)
-  (load-theme 'monokai))
+  (column-number-mode 1))
 
 (defun bc-setup-fonts ()
    (cond ((eq system-type 'darwin)
@@ -236,7 +235,9 @@ before visiting a new tags table"
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (bc-setup-fonts))
+  (bc-setup-fonts)
+  (load-theme 'monokai))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup eshell
