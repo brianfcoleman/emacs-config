@@ -33,6 +33,22 @@
   (evil-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup completion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun bc-setup-completion ()
+  "Setup autocompletion"
+  (require 'yasnippet)
+  (yas-global-mode 1)
+  (require 'auto-complete-config)
+  (ac-config-default)
+  (defadvice ac-cc-mode-setup (after bc-complete-clang)
+    "Add the clang completion source to autocomplete in c mode"
+    (require 'auto-complete-clang)
+    (setq ac-clang-flags '("-std=c++0x"))
+    (setq ac-sources (append '(ac-source-clang ac-source-semantic) ac-sources)))
+  (ad-activate 'ac-cc-mode-setup))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup search and navigation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-ido-find-tag ()
@@ -73,10 +89,6 @@
             ;; TODO car does not seem to work here. Why?
             (let ((tags-file (elt tags-files 0)))
               (list-tags tags-file)))))))
-
-(defun bc-ido-find-tag-current-buffer ()
-  "Find a tag in the current buffer"
-  )
 
 (defadvice visit-tags-table (before bc-reset-tags)
   "Clear the tags completion table and the current tags table
@@ -137,7 +149,6 @@ before visiting a new tags table"
   (global-set-key (kbd "<f8>") 'semantic-ia-fast-jump)
   (global-set-key (kbd "C-s") 'flex-isearch-forward)
   (global-set-key (kbd "C-r") 'flex-isearch-backward)
-  (global-set-key (kbd "M-/") 'hippie-expand)
   (global-set-key (kbd "C-c SPC") 'semantic-complete-symbol)
   (global-set-key (kbd "C-c m") 'execute-extended-command)
   (global-set-key (kbd "C-c c") 'compile)
@@ -257,6 +268,7 @@ before visiting a new tags table"
 (bc-setup-package-manager)
 (bc-setup-customization)
 (bc-setup-input)
+(bc-setup-completion)
 (bc-setup-search-and-navigation)
 ;; TODO Load all required files in a more structured manner
 (load "init-aliases")
