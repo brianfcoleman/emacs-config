@@ -186,7 +186,6 @@ before visiting a new tags table"
   (setq fill-column 80)
 
   (require 'fill-column-indicator)
-  (setq fci-rule-color "#FFFFFF")
   (fci-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
