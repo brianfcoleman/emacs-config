@@ -29,6 +29,7 @@
   (electric-pair-mode 1)
 
   (require 'evil)
+  (setq evil-default-cursor "#FFFFFF")
   (evil-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -174,6 +175,7 @@ before visiting a new tags table"
   (setq fill-column 80)
 
   (require 'fill-column-indicator)
+  (setq fci-rule-color "#FFFFFF")
   (fci-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -273,8 +275,7 @@ before visiting a new tags table"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-prog-mode-hook ()
   (flex-isearch-mode 1)
-  (setq fill-column 80)
-  (fci-mode 1))
+  (bc-setup-wrapping))
 (add-hook 'prog-mode-hook 'bc-prog-mode-hook)
 
 (defun bc-c-mode-common-hook ()

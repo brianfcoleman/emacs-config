@@ -15,6 +15,7 @@
   (defalias 'c 'compile)
   (defalias 'fnd 'find-name-dired)
   (defalias 'ckrs 'clipboard-kill-ring-save)
+  (defalias 'o 'occur)
   (defalias 'r 'rgrep)
   (defalias 'jt 'idomenu)
   (defalias 'ft 'bc-ido-find-tag)
