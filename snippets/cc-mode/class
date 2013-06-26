@@ -1,0 +1,12 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: Class template
+#key class
+# --
+class ${1:`(file-name-base)`}
+{
+  $1();
+
+  ~$1();
+
+  $0
+};

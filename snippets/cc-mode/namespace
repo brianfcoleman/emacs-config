@@ -1,0 +1,10 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: Namespace block
+#key namespace
+# --
+namespace $1
+{
+
+  $0
+
+}

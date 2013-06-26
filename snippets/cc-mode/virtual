@@ -1,0 +1,5 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: Virtual method declaration
+#key Virtual method declaration
+# --
+virtual $1 $2($3) = 0;

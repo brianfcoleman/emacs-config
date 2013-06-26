@@ -44,9 +44,12 @@
   (defadvice ac-cc-mode-setup (after bc-complete-clang)
     "Add the clang completion source to autocomplete in c mode"
     (require 'auto-complete-clang)
-    (setq ac-clang-flags '("-std=c++0x"))
+    (setq ac-clang-flags (append '("-std=c++0x" "-I.") (bc-include-path)))
     (setq ac-sources (append '(ac-source-clang ac-source-semantic) ac-sources)))
-  (ad-activate 'ac-cc-mode-setup))
+  ;; TODO clang and semantic are very slow. clang fails because I have setup the
+  ;; include paths incorrectly.
+  ;; (ad-activate 'ac-cc-mode-setup)
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup search and navigation
@@ -125,12 +128,22 @@ before visiting a new tags table"
   (semantic-mode 1)
   (global-ede-mode t)
   (load "init-ede-projects")
+  (bc-setup-ede-project)
 
   (ad-activate 'visit-tags-table))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup key bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun bc-next-window ()
+  "Switch to the next window"
+  (interactive)
+  (other-window 1))
+(defun bc-previous-window ()
+  "Switch to the previous window"
+  (interactive)
+  (other-window -1))
+
 (defun bc-find-next-tag ()
   "Find the next occurence of the last tag to be found"
   (interactive)
@@ -142,30 +155,37 @@ before visiting a new tags table"
   (interactive)
   (find-tag last-tag '- nil))
 
+(defun bc-indent-buffer ()
+  "Indent the buffer"
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defun bc-end-statement ()
+  "End a statement in a C-like language by inserting a semicolon."
+  (interactive)
+  (search-forward-regexp "$")
+  (replace-match ";"))
+
+(defun bc-implement-member-function ()
+  "Convert a member function declaration into a member function definition."
+  (interactive)
+  (search-backward-regexp "^")
+  (search-forward-regexp "^\\(.+\\)\\(\\<[^(]+([^;]+\\);$")
+  (replace-match (format "%s\n%s;" (match-string 1) (match-string 2)))
+  (search-backward-regexp "^")
+  (insert (format "%s::" (file-name-base (buffer-file-name))))
+  (search-forward ";")
+  (replace-match "\n{\n}"))
+
 (defun bc-setup-key-bindings ()
-  (global-set-key (kbd "<f5>") 'er/expand-region)
-  (global-set-key (kbd "<f6>") 'ace-jump-mode)
-  (global-set-key (kbd "<f7>") 'find-file-in-project)
-  (global-set-key (kbd "<f8>") 'semantic-ia-fast-jump)
-  (global-set-key (kbd "C-s") 'flex-isearch-forward)
-  (global-set-key (kbd "C-r") 'flex-isearch-backward)
-  (global-set-key (kbd "C-c SPC") 'semantic-complete-symbol)
-  (global-set-key (kbd "C-c m") 'execute-extended-command)
-  (global-set-key (kbd "C-c c") 'compile)
-  (global-set-key (kbd "C-c d") 'semantic-ia-fast-jump)
-  (global-set-key (kbd "C-c f") 'find-name-dired)
-  (global-set-key (kbd "C-c k") 'clipboard-kill-ring-save)
-  (global-set-key (kbd "C-c g") 'rgrep)
-  (global-set-key (kbd "C-c j") 'idomenu)
-  (global-set-key (kbd "C-c p") 'find-file-in-project)
-  (global-set-key (kbd "C-c y") 'clipboard-yank)
-  (global-set-key (kbd "C-c x") 'er/expand-region)
-  (global-set-key (kbd "C-c n") 'senator-next-tag)
-  (global-set-key (kbd "C-c p") 'senator-previous-tag)
-  ;; TODO Extract evil key setup into a separate function
+  (global-set-key (kbd "<f5>") 'bc-end-statement)
+  (global-set-key (kbd "<f6>") 'bc-implement-member-function)
+  (bc-setup-evil-mode-key-bindings))
+
+(defun bc-setup-evil-mode-key-bindings ()
   (require 'key-chord)
   (setq key-chord-two-keys-delay 0.5)
-  (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
   (key-chord-mode 1)
   (define-key evil-motion-state-map ":" nil)
   (define-key evil-motion-state-map ";" nil)
