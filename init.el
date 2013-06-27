@@ -170,16 +170,25 @@ before visiting a new tags table"
   "Convert a member function declaration into a member function definition."
   (interactive)
   (search-backward-regexp "^")
-  (search-forward-regexp "^\\(.+\\)\\(\\<[^(]+([^;]+\\);$")
-  (replace-match (format "%s\n%s;" (match-string 1) (match-string 2)))
+  (search-forward-regexp "^ *\\(virtual\\)?\\([^~(;]*\\)\\(~?\\<[^(;]+([^);]*)\\)\\([^=;]*\\)\\(= *0\\)?\\([^;]*\\);$")
+  (message "[%s][%s][%s]" (match-string 2) (match-string 3) (match-string 4))
+  (replace-match (format "%s\n%s%s;" (match-string 2) (match-string 3) (match-string 4)))
   (search-backward-regexp "^")
   (insert (format "%s::" (file-name-base (buffer-file-name))))
   (search-forward ";")
   (replace-match "\n{\n}"))
 
+(defun bc-insert-pair (open-char close-char)
+  "Insert a pair of characters at the current point in the buffer"
+  (insert-char open-char)
+  (insert-char close-char))
+
 (defun bc-setup-key-bindings ()
-  (global-set-key (kbd "<f5>") 'bc-end-statement)
-  (global-set-key (kbd "<f6>") 'bc-implement-member-function)
+  (global-set-key (kbd "<f5>") 'bc-implement-member-function)
+  (global-set-key (kbd "<f6>") 'bc-end-statement)
+  (global-set-key (kbd "<f7>") (lambda () (interactive) (bc-insert-pair ?( ?))))
+  (global-set-key (kbd "<f8>") (lambda () (interactive) (bc-insert-pair ?{ ?})))
+  (global-set-key (kbd "<f9>") (lambda () (interactive) (bc-insert-pair ?[ ?])))
   (bc-setup-evil-mode-key-bindings))
 
 (defun bc-setup-evil-mode-key-bindings ()
