@@ -180,8 +180,10 @@ before visiting a new tags table"
 
 (defun bc-insert-pair (open-char close-char)
   "Insert a pair of characters at the current point in the buffer"
-  (insert-char open-char)
-  (insert-char close-char))
+  (let ((start-point (point)))
+    (insert-char open-char)
+    (insert-char close-char)
+    (goto-char (+ start-point 1))))
 
 (defun bc-setup-key-bindings ()
   (global-set-key (kbd "<f5>") 'bc-implement-member-function)
@@ -252,7 +254,7 @@ before visiting a new tags table"
   (column-number-mode 1))
 
 (defun bc-setup-fonts ()
-   (cond ((eq system-type 'darwin)
+  (cond ((eq system-type 'darwin)
          (set-frame-font "Menlo-12" nil t))
         ((eq system-type 'gnu/linux)
          (set-frame-font "Liberation Mono-10" nil t))
@@ -272,8 +274,8 @@ before visiting a new tags table"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-setup-eshell ()
   (setq eshell-prompt-function
-      (lambda ()
-        "$ "))
+        (lambda ()
+          "$ "))
   (setq eshell-prompt-regexp "$ "))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
