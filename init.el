@@ -195,8 +195,11 @@ before visiting a new tags table"
 
 (defun bc-setup-evil-mode-key-bindings ()
   (require 'key-chord)
-  (setq key-chord-two-keys-delay 0.5)
+  (setq key-chord-two-keys-delay 1.0)
   (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "kk" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
   (key-chord-mode 1)
   (define-key evil-motion-state-map ":" nil)
   (define-key evil-motion-state-map ";" nil)
@@ -217,6 +220,7 @@ before visiting a new tags table"
   (setq fill-column 80)
 
   (require 'fill-column-indicator)
+  (setq fci-rule-color "#ffffff")
   (fci-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
