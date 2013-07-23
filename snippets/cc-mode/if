@@ -1,10 +1,8 @@
 #contribtor : Brian Coleman <brianfcoleman@gmail.com>
-#name: namespace block
-#key ns
+#name: if statement
+#key if
 # --
-namespace $1
+if ($1)
 {
-
-  $0
-
+  $0;
 }

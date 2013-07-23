@@ -1,10 +1,11 @@
 #contribtor : Brian Coleman <brianfcoleman@gmail.com>
-#name: Class template
-#key class
+#name: class declaration
+#key cls
 # --
 class ${1:`(file-name-base)`}
 {
 public:
+
   $1();
 
   virtual ~$1();

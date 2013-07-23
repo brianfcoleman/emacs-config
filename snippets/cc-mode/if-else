@@ -1,0 +1,12 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: if else statement
+#key ifel
+# --
+if ($1)
+{
+  $2;
+}
+else
+{
+  $0;
+}

@@ -1,6 +1,6 @@
 #contribtor : Brian Coleman <brianfcoleman@gmail.com>
 #name: RealVNC header template
-#key header
+#key hdr
 # --
 /* Copyright (C) 2002-2013 RealVNC Ltd.  All Rights Reserved.
  */

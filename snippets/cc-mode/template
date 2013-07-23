@@ -1,0 +1,5 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: template declaration
+#key tmp
+# --
+template<typename $1> $0;

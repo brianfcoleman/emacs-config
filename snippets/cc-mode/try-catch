@@ -1,0 +1,12 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: try catch block
+#key try
+# --
+try
+{
+ $0;
+}
+catch (${1:std::exception& e})
+{
+  ${2:std::cout << e << std::endl;}
+}

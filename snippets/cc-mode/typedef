@@ -1,10 +1,5 @@
 #contribtor : Brian Coleman <brianfcoleman@gmail.com>
-#name: namespace block
-#key ns
+#name: typedef declaration
+#key tdef
 # --
-namespace $1
-{
-
-  $0
-
-}
+typedef $1 $0;
