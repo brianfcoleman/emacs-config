@@ -166,6 +166,12 @@ before visiting a new tags table"
   (search-forward-regexp "$")
   (replace-match ";"))
 
+(defun bc-trim-newlines ()
+  "Replace occurences of 3 or more consecutive newlines with 2 newlines."
+  (interactive)
+  (save-excursion
+    (replace-regexp "[\n]\\{3,\\}" "\n\n" nil (point-min) (point-max))))
+
 (defun bc-implement-member-function ()
   "Convert a member function declaration into a member function definition."
   (interactive)
@@ -187,10 +193,11 @@ before visiting a new tags table"
 
 (defun bc-setup-key-bindings ()
   (global-set-key (kbd "<f5>") 'bc-implement-member-function)
-  (global-set-key (kbd "<f6>") 'bc-end-statement)
-  (global-set-key (kbd "<f7>") (lambda () (interactive) (bc-insert-pair ?( ?))))
-  (global-set-key (kbd "<f8>") (lambda () (interactive) (bc-insert-pair ?{ ?})))
-  (global-set-key (kbd "<f9>") (lambda () (interactive) (bc-insert-pair ?[ ?])))
+  (global-set-key (kbd "<f6>") 'bc-trim-newlines)
+  (global-set-key (kbd "<f7>") 'bc-end-statement)
+  (global-set-key (kbd "<f8>") (lambda () (interactive) (bc-insert-pair ?( ?))))
+  (global-set-key (kbd "<f9>") (lambda () (interactive) (bc-insert-pair ?{ ?})))
+  (global-set-key (kbd "<f10>") (lambda () (interactive) (bc-insert-pair ?[ ?])))
   (bc-setup-evil-mode-key-bindings))
 
 (defun bc-setup-evil-mode-key-bindings ()
