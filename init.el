@@ -116,6 +116,7 @@ before visiting a new tags table"
 
   (icomplete-mode 1)
 
+  (setq imenu-auto-rescan t)
   (autoload 'idomenu "idomenu" nil t)
   (setq ido-enable-flex-matching t)
   (setq ido-everywhere t)

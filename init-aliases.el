@@ -38,6 +38,7 @@
   (defalias 'sn 'senator-next-tag)
   (defalias 'sp 'senator-previous-tag)
   (defalias 'qr 'query-replace)
+  (defalias 'rs 'replace-string)
   (defalias 'vtt 'visit-tags-table)
   (defalias 'ia 'bc-indent-buffer)
   (defalias 'ir 'indent-region)
