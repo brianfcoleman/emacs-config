@@ -101,9 +101,12 @@ before visiting a new tags table"
 
 (defun bc-setup-search-and-navigation ()
   (setq dabbrev-case-fold-search nil)
+
+  (require 'find-file-in-project)
+  (setq ffip-limit 1000000)
   (setq ffip-patterns
-        '("*.c" "*.cc" "*.cpp" "*.cxx" "*.h" "*.hpp" "*.js" "*.html" "*.java"
-          "*.m" "*.mm" "*.py" "*.sh"))
+        '("*.c" "*.cc" "*.cpp" "*.cxx" "*.el" "*.h" "*.hpp" "*.js" "*.html"
+          "*.java" "*.m" "*.mm" "*.py" "*.sh"))
 
   (require 'cl)
   (require 'ace-jump-mode)
@@ -263,7 +266,9 @@ before visiting a new tags table"
   (menu-bar-mode -1)
 
   (line-number-mode 1)
-  (column-number-mode 1))
+  (column-number-mode 1)
+
+  (global-linum-mode 1))
 
 (defun bc-setup-fonts ()
   (cond ((eq system-type 'darwin)
