@@ -1,0 +1,6 @@
+#contribtor : Brian Coleman <brianfcoleman@gmail.com>
+#name: lock statement
+#key lock
+# --
+Lock lock(${1:_guard});
+$0
