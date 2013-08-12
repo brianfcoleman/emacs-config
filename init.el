@@ -204,6 +204,45 @@ before visiting a new tags table"
   (global-set-key (kbd "<f10>") (lambda () (interactive) (bc-insert-pair ?[ ?])))
   (bc-setup-evil-mode-key-bindings))
 
+(defvar bc-last-search-direction 'forward
+  "The direction of the last search")
+
+(defun bc-reverse-direction (direction)
+  "Reverse direction"
+  (cond ((eq direction 'forward) 'backward)
+        ((eq direction 'backward) 'forward)))
+
+(defun bc-search (direction)
+  "Search forward or backward"
+  (setq bc-last-search-direction direction)
+  (cond ((eq direction 'forward) (flex-isearch-forward))
+        ((eq direction 'backward) (flex-isearch-backward))))
+
+(defun bc-search-forward ()
+  "Search forward"
+  (interactive)
+  (bc-search 'forward))
+
+(defun bc-search-backward ()
+  "Search backward"
+  (interactive)
+  (bc-search 'backward))
+
+(defun bc-repeat-search (direction)
+  "Repeat a search forward or backward"
+  (cond ((eq direction 'forward) (isearch-repeat-forward))
+        ((eq direction 'backward) (isearch-repeat-backward))))
+
+(defun bc-repeat-last-search ()
+  "Repeat the last search"
+  (interactive)
+  (bc-repeat-search bc-last-search-direction))
+
+(defun bc-repeat-last-search-reversed ()
+  "Repeat the last search but in the reverse direction"
+  (interactive)
+  (bc-repeat-search (bc-reverse-direction bc-last-search-direction)))
+
 (defun bc-setup-evil-mode-key-bindings ()
   (require 'key-chord)
   (setq key-chord-two-keys-delay 1.0)
@@ -216,12 +255,16 @@ before visiting a new tags table"
   (define-key evil-motion-state-map ";" nil)
   (define-key evil-motion-state-map ":" 'smex)
   (define-key evil-motion-state-map ";" 'evil-ex)
+  (define-key evil-normal-state-map "/" 'bc-search-forward)
+  (define-key evil-normal-state-map "?" 'bc-search-backward)
+  (define-key evil-normal-state-map "n" 'bc-repeat-last-search)
+  (define-key evil-normal-state-map "N" 'bc-repeat-last-search-reversed)
   (define-key evil-ex-map "ib" 'ido-switch-buffer)
   (define-key evil-ex-map "id" 'ido-dired)
   (define-key evil-ex-map "ie" 'ido-find-file)
   (define-key evil-ex-map "o" 'other-window)
-  (define-key evil-ex-map "n" 'bc-find-next-tag)
-  (define-key evil-ex-map "p" 'bc-find-previous-tag))
+  (define-key evil-ex-map "tn" 'bc-find-next-tag)
+  (define-key evil-ex-map "tp" 'bc-find-previous-tag))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup wrapping
