@@ -44,4 +44,6 @@
   (defalias 'ir 'indent-region)
   (defalias 'il 'indent-according-to-mode)
   (defalias 'ne 'next-error)
-  (defalias 'pe 'previous-error))
+  (defalias 'pe 'previous-error)
+  (defalias 'ff 'ftf-find-file)
+  (defalias 'fg 'ftf-grepsource))
