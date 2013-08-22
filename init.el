@@ -432,6 +432,15 @@ before visiting a new tags table"
   (delete-trailing-whitespace))
 (add-hook 'before-save-hook 'bc-strip-whitespace)
 
+(defun bc-setup-compilation-buffer ()
+  (require 'ansi-color)
+  (defun bc-color-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (toggle-read-only))
+  (add-hook 'compilation-filter-hook 'bc-color-compilation-buffer))
+
+(bc-setup-compilation-buffer)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Save desktop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
