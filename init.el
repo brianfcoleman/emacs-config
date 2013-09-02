@@ -340,7 +340,7 @@ before visiting a new tags table"
   (line-number-mode 1)
   (column-number-mode 1)
 
-  (global-linum-mode 1))
+  (global-linum-mode -1))
 
 (defun bc-setup-fonts ()
   (cond ((eq system-type 'darwin)
