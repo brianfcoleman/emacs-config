@@ -12,6 +12,31 @@
         (format "%s/.emacs.d/init-customization.el" (getenv "HOME")))
   (load custom-file))
 
+(defvar bc-package-list
+  '(ace-jump-mode
+    auto-complete
+    auto-complete-clang
+    clojure-mode
+    ecb
+    evil
+    expand-region
+    expectations-mode
+    fill-column-indicator
+    find-things-fast
+    flex-isearch
+    helm
+    idomenu
+    key-chord
+    magit
+    monokai-theme
+    nrepl
+    popup
+    smex
+    solarized-theme
+    undo-tree
+    yasnippet
+    zenburn-theme))
+
 (defun bc-setup-package-manager ()
   (require 'package)
   (add-to-list 'package-archives
@@ -20,7 +45,11 @@
                '("marmalade" . "http://marmalade-repo.org/packages/"))
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.milkbox.net/packages/"))
-  (package-initialize))
+  (package-initialize)
+  (mapcar (lambda (package)
+            (if (not (package-installed-p package))
+                (package-install package)))
+          bc-package-list))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup input
