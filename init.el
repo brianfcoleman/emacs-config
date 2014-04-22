@@ -13,29 +13,23 @@
   (load custom-file))
 
 (defvar bc-package-list
-  '(ace-jump-mode
-    auto-complete
-    auto-complete-clang
-    clojure-mode
-    ecb
+  '(auto-complete
     evil
-    expand-region
-    expectations-mode
+    evil-leader
     fill-column-indicator
-    find-things-fast
     flex-isearch
-    helm
+    god-mode
     idomenu
     key-chord
-    magit
-    monokai-theme
-    nrepl
     popup
+    pos-tip
+    projectile-mode
     smex
-    solarized-theme
     undo-tree
     yasnippet
-    zenburn-theme))
+    w3m))
+;; TODO Install grizzl-mode, ido-vertical-mode and and god-state.el
+;; TODO Consider using irony-mode and clang-tags
 
 (defun bc-setup-package-manager ()
   (require 'package)
@@ -46,6 +40,8 @@
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.milkbox.net/packages/"))
   (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
   (mapcar (lambda (package)
             (if (not (package-installed-p package))
                 (package-install package)))
@@ -54,11 +50,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup input
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar bc-dark-background-p nil)
+
 (defun bc-setup-input()
   (electric-pair-mode 1)
+  (show-paren-mode 1)
+
+  ;; TODO Setup god-mode
 
   (require 'evil)
-  (setq evil-default-cursor "#FFFFFF")
+  (when bc-dark-background-p
+    (setq evil-default-cursor "#FFFFFF"))
   (evil-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,17 +70,7 @@
   "Setup autocompletion"
   (require 'yasnippet)
   (yas-global-mode 1)
-  (require 'auto-complete-config)
-  (ac-config-default)
-  (defadvice ac-cc-mode-setup (after bc-complete-clang)
-    "Add the clang completion source to autocomplete in c mode"
-    (require 'auto-complete-clang)
-    (setq ac-clang-flags (append '("-std=c++0x" "-I.") (bc-include-path)))
-    (setq ac-sources (append '(ac-source-clang ac-source-semantic) ac-sources)))
-  ;; TODO clang and semantic are very slow. clang fails because I have setup the
-  ;; include paths incorrectly.
-  ;; (ad-activate 'ac-cc-mode-setup)
-  )
+  (ac-config-default))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup search and navigation
@@ -88,8 +80,8 @@
   (interactive)
   (tags-completion-table)
   (let (tag-names)
-    (mapatoms (lambda (x)
-                (push (prin1-to-string x t) tag-names))
+    (mapatoms (lambda (tag-name)
+                (push (prin1-to-string tag-name t) tag-names))
               tags-completion-table)
     (find-tag (ido-completing-read "Tag: " tag-names))))
 
@@ -110,7 +102,7 @@
   (require 'cl)
   (save-excursion
     (let ((current-file (expand-file-name (buffer-file-name))))
-      ;; TODO Do I need to visit the tags table buffer
+      ;; TODO Do I need to visit the tags table buffer?
       (visit-tags-table-buffer)
       (let ((tags-files
              (remove-if-not (lambda (tags-file)
@@ -118,7 +110,6 @@
                                             current-file))
                             (tags-table-files))))
         (if (>= (length tags-files) 0)
-            ;; TODO car does not seem to work here. Why?
             (let ((tags-file (elt tags-files 0)))
               (list-tags tags-file)))))))
 
@@ -131,24 +122,11 @@ before visiting a new tags table"
 (defun bc-setup-search-and-navigation ()
   (setq dabbrev-case-fold-search nil)
 
-  (require 'find-file-in-project)
-  (setq ffip-limit 1000000)
-  (setq ffip-patterns
-        '("*.c" "*.cc" "*.cpp" "*.cxx" "*.el" "*.h" "*.hpp" "*.js" "*.html"
-          "*.java" "*.m" "*.mm" "*.py" "*.sh"))
-
-  (require 'cl)
-  (require 'ace-jump-mode)
-
-  (require 'expand-region)
-
   (require 'flex-isearch)
   (flex-isearch-mode 1)
   (setq flex-isearch-auto t)
 
-  (icomplete-mode 1)
-
-  (setq imenu-auto-rescan t)
+  ;; TODO Setup ido-vertical-mode
   (autoload 'idomenu "idomenu" nil t)
   (setq ido-enable-flex-matching t)
   (setq ido-everywhere t)
@@ -157,11 +135,19 @@ before visiting a new tags table"
   (require 'smex)
   (smex-initialize)
 
+  (require 'projectile-mode)
+  (require 'grizzl-mode)
+  (projectile-global-mode)
+  (setq projectile-completion-system 'grizzl)
+
   (require 'semantic/ia)
   (semantic-mode 1)
   (global-ede-mode t)
   (load "init-ede-projects")
   (bc-setup-ede-project)
+
+  (add-hook 'speedbar-load-hook (lambda () (require 'semantic/sb)))
+  (add-hook 'semantic-init-hooks (lambda () (imenu-add-to-menubar "TAGS")))
 
   (ad-activate 'visit-tags-table))
 
@@ -192,46 +178,6 @@ before visiting a new tags table"
   "Indent the buffer"
   (interactive)
   (indent-region (point-min) (point-max)))
-
-(defun bc-end-statement ()
-  "End a statement in a C-like language by inserting a semicolon."
-  (interactive)
-  (search-forward-regexp "$")
-  (replace-match ";"))
-
-(defun bc-trim-newlines ()
-  "Replace occurences of 3 or more consecutive newlines with 2 newlines."
-  (interactive)
-  (save-excursion
-    (replace-regexp "[\n]\\{3,\\}" "\n\n" nil (point-min) (point-max))))
-
-(defun bc-implement-member-function ()
-  "Convert a member function declaration into a member function definition."
-  (interactive)
-  (search-backward-regexp "^")
-  (search-forward-regexp "^ *\\(virtual\\)?\\([^~(;]*\\)\\(~?\\<[^(;]+([^);]*)\\)\\([^=;]*\\)\\(= *0\\)?\\([^;]*\\);$")
-  (message "[%s][%s][%s]" (match-string 2) (match-string 3) (match-string 4))
-  (replace-match (format "%s\n%s%s;" (match-string 2) (match-string 3) (match-string 4)))
-  (search-backward-regexp "^")
-  (insert (format "%s::" (file-name-base (buffer-file-name))))
-  (search-forward ";")
-  (replace-match "\n{\n}"))
-
-(defun bc-insert-pair (open-char close-char)
-  "Insert a pair of characters at the current point in the buffer"
-  (let ((start-point (point)))
-    (insert-char open-char)
-    (insert-char close-char)
-    (goto-char (+ start-point 1))))
-
-(defun bc-setup-key-bindings ()
-  (global-set-key (kbd "<f5>") 'bc-implement-member-function)
-  (global-set-key (kbd "<f6>") 'bc-trim-newlines)
-  (global-set-key (kbd "<f7>") 'bc-end-statement)
-  (global-set-key (kbd "<f8>") (lambda () (interactive) (bc-insert-pair ?( ?))))
-  (global-set-key (kbd "<f9>") (lambda () (interactive) (bc-insert-pair ?{ ?})))
-  (global-set-key (kbd "<f10>") (lambda () (interactive) (bc-insert-pair ?[ ?])))
-  (bc-setup-evil-mode-key-bindings))
 
 (defvar bc-last-search-direction 'forward
   "The direction of the last search")
@@ -287,13 +233,7 @@ before visiting a new tags table"
   (define-key evil-normal-state-map "/" 'bc-search-forward)
   (define-key evil-normal-state-map "?" 'bc-search-backward)
   (define-key evil-normal-state-map "n" 'bc-repeat-last-search)
-  (define-key evil-normal-state-map "N" 'bc-repeat-last-search-reversed)
-  (define-key evil-ex-map "ib" 'ido-switch-buffer)
-  (define-key evil-ex-map "id" 'ido-dired)
-  (define-key evil-ex-map "ie" 'ido-find-file)
-  (define-key evil-ex-map "o" 'other-window)
-  (define-key evil-ex-map "tn" 'bc-find-next-tag)
-  (define-key evil-ex-map "tp" 'bc-find-previous-tag))
+  (define-key evil-normal-state-map "N" 'bc-repeat-last-search-reversed))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup wrapping
@@ -303,7 +243,8 @@ before visiting a new tags table"
   (setq fill-column 80)
 
   (require 'fill-column-indicator)
-  (setq fci-rule-color "#ffffff")
+  (when bc-dark-background-p
+    (setq fci-rule-color "#ffffff"))
   (fci-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -322,8 +263,7 @@ before visiting a new tags table"
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-  (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode)))
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup appearance
@@ -354,9 +294,7 @@ before visiting a new tags table"
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (bc-setup-fonts)
-  (load-theme 'monokai))
-
+  (bc-setup-fonts))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup eshell
@@ -403,7 +341,7 @@ before visiting a new tags table"
 (bc-setup-w3m)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Setup hooks
+;; Programming modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-prog-mode-hook ()
   (flex-isearch-mode 1)
@@ -412,10 +350,11 @@ before visiting a new tags table"
 
 (defun bc-c-mode-common-hook ()
   (subword-mode)
-  (local-set-key (kbd "C-c o") 'ff-find-other-file)
-  (require 'vnc-c-style)
-  (vnc-set-c-style))
-(add-hook 'c-mode-common-hook 'bc-c-mode-common-hook)
+  (require 'google-c-style)
+  (google-set-c-style))
+(add-hook 'c-mode-hook 'bc-c-mode-common-hook)
+(add-hook 'c++-mode-hook 'bc-c-mode-common-hook)
+(add-hook 'objc-mode-hook 'bc-c-mode-common-hook)
 
 (defun bc-java-mode-hook ()
   (subword-mode)
@@ -426,35 +365,29 @@ before visiting a new tags table"
 
 (defun bc-js-mode-hook ()
   (subword-mode)
-  (setq tab-width 2)
+  (setq tab-width 4)
   (setq indent-tabs-mode nil)
   (setq js-indent-level 2))
 (add-hook 'js-mode-hook 'bc-js-mode-hook)
 
 (defun bc-lisp-mode-hook ()
+  (setq tab-width 4)
   (setq indent-tabs-mode nil)
   (show-paren-mode 1))
 (add-hook 'lisp-mode-hook 'bc-lisp-mode-hook)
 
 (defun bc-python-mode-hook ()
   (subword-mode)
+  (setq tab-width 4)
   (setq indent-tabs-mode nil)
-  (setq python-indent 2))
+  (setq python-indent 4))
 
 (defun bc-sh-mode-hook ()
   (subword-mode)
+  (setq tab-width 4)
   (setq indent-tabs-mode nil)
-  (setq sh-basic-offset 2))
+  (setq sh-basic-offset 4))
 (add-hook 'sh-mode-hook 'bc-sh-mode-hook)
-
-(defun bc-align-load-hook ()
-  (add-to-list 'align-rules-list
-               '(js-declaration
-                 (regexp . "^\s*[^\s:]+:\\(\s*\\)[^\s].*,?\s*$")
-                 (group 1)
-                 (modes quote
-                        (js-mode)))))
-(add-hook 'align-load-hook 'bc-align-load-hook)
 
 (defun bc-strip-whitespace ()
   (untabify 0 (buffer-end 1))
@@ -470,7 +403,9 @@ before visiting a new tags table"
   (add-hook 'compilation-filter-hook 'bc-color-compilation-buffer))
 
 (bc-setup-compilation-buffer)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Save desktop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(desktop-save-mode 1)
+(defun bc-setup-desktop-save-mode
+  (desktop-save-mode 1))
