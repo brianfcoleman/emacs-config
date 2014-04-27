@@ -5,7 +5,10 @@
   (add-to-list 'load-path
                (format "%s/.emacs.d" (getenv "HOME")))
   (add-to-list 'load-path
-               (format "%s/.emacs.d/site-lisp" (getenv "HOME"))))
+               (format "%s/.emacs.d/site-lisp" (getenv "HOME")))
+  (add-to-list 'load-path
+               (format "%s/.emacs.d/site-lisp/ido-vertical-mode"
+                       (getenv "HOME"))))
 
 (defun bc-setup-customization ()
   (setq custom-file
@@ -18,17 +21,19 @@
     evil-leader
     fill-column-indicator
     flex-isearch
+    flx
+    flx-ido
     god-mode
+    grizzl
     idomenu
     key-chord
     popup
     pos-tip
-    projectile-mode
+    projectile
     smex
     undo-tree
     yasnippet
     w3m))
-;; TODO Install grizzl-mode, ido-vertical-mode and and god-state.el
 ;; TODO Consider using irony-mode and clang-tags
 
 (defun bc-setup-package-manager ()
@@ -56,12 +61,17 @@
   (electric-pair-mode 1)
   (show-paren-mode 1)
 
-  ;; TODO Setup god-mode
+  (require 'key-chord)
+  (setq key-chord-two-keys-delay 1.0)
+  (key-chord-mode 1)
 
+  (require 'god-mode)
   (require 'evil)
+  (require 'evil-leader)
   (when bc-dark-background-p
     (setq evil-default-cursor "#FFFFFF"))
-  (evil-mode 1))
+  (evil-mode 1)
+  (global-evil-leader-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup completion
@@ -70,6 +80,8 @@
   "Setup autocompletion"
   (require 'yasnippet)
   (yas-global-mode 1)
+  (require 'pos-tip)
+  (require 'auto-complete-config)
   (ac-config-default))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,19 +138,22 @@ before visiting a new tags table"
   (flex-isearch-mode 1)
   (setq flex-isearch-auto t)
 
-  ;; TODO Setup ido-vertical-mode
+  (require 'flx-ido)
+  (require 'ido-vertical-mode)
   (autoload 'idomenu "idomenu" nil t)
-  (setq ido-enable-flex-matching t)
   (setq ido-everywhere t)
+  (setq ido-use-faces nil)
   (ido-mode 1)
+  (ido-vertical-mode 1)
+  (flx-ido-mode 1)
 
   (require 'smex)
   (smex-initialize)
 
-  (require 'projectile-mode)
-  (require 'grizzl-mode)
   (projectile-global-mode)
-  (setq projectile-completion-system 'grizzl)
+  ;; TODO Use ido as when I run projectile-switch-project with grizzl completion
+  ;; mode for a project that I have not navigated to before it fails.
+  (setq projectile-completion-system 'ido)
 
   (require 'semantic/ia)
   (semantic-mode 1)
@@ -218,22 +233,48 @@ before visiting a new tags table"
   (interactive)
   (bc-repeat-search (bc-reverse-direction bc-last-search-direction)))
 
-(defun bc-setup-evil-mode-key-bindings ()
-  (require 'key-chord)
-  (setq key-chord-two-keys-delay 1.0)
+(defun bc-setup-key-chords ()
   (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
   (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
   (key-chord-define evil-insert-state-map "kk" 'evil-normal-state)
-  (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
-  (key-chord-mode 1)
+  (key-chord-define evil-insert-state-map "kj" 'evil-normal-state))
+
+(defun bc-emacs-state ()
+  (interactive)
+  (evil-emacs-state)
+  (god-local-mode))
+
+(defun bc-exit-emacs-state ()
+  (interactive)
+  (god-local-mode)
+  (evil-exit-emacs-state))
+
+(defun bc-setup-evil-mode-key-bindings ()
   (define-key evil-motion-state-map ":" nil)
   (define-key evil-motion-state-map ";" nil)
   (define-key evil-motion-state-map ":" 'smex)
   (define-key evil-motion-state-map ";" 'evil-ex)
+  (define-key evil-motion-state-map "\\" 'bc-emacs-state)
   (define-key evil-normal-state-map "/" 'bc-search-forward)
   (define-key evil-normal-state-map "?" 'bc-search-backward)
   (define-key evil-normal-state-map "n" 'bc-repeat-last-search)
   (define-key evil-normal-state-map "N" 'bc-repeat-last-search-reversed))
+
+(defun bc-setup-evil-leader-key-bindings ()
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader/set-key "f" 'projectile-find-file)
+  (evil-leader/set-key "d" 'projectile-find-dir)
+  (evil-leader/set-key "b" 'ido-switch-buffer))
+
+(defun bc-setup-god-mode-key-bindings ()
+  (define-key god-local-mode-map (kbd "<escape>") 'bc-exit-emacs-state)
+  (define-key god-local-mode-map (kbd "\\") 'bc-exit-emacs-state))
+
+(defun bc-setup-key-bindings ()
+  (bc-setup-key-chords)
+  (bc-setup-evil-mode-key-bindings)
+  (bc-setup-evil-leader-key-bindings)
+  (bc-setup-god-mode-key-bindings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup wrapping
@@ -275,7 +316,7 @@ before visiting a new tags table"
 
 (defun bc-setup-common-appearance()
   (setq inhibit-startup-screen 1)
-  (menu-bar-mode -1)
+  (menu-bar-mode 1)
 
   (line-number-mode 1)
   (column-number-mode 1)
@@ -291,8 +332,8 @@ before visiting a new tags table"
          (set-frame-font "Consolas-10" nil t))))
 
 (defun bc-setup-windowed-mode-appearance ()
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
+  (tool-bar-mode 1)
+  (scroll-bar-mode 1)
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (bc-setup-fonts))
 
@@ -315,9 +356,8 @@ before visiting a new tags table"
 ;; Setup w3m
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-setup-w3m ()
-  (add-to-list 'load-path
-               (format "%s/.emacs.d/site-lisp/w3m" (getenv "HOME")))
-  (require 'w3m-load))
+  (when (eq system-type 'darwin)
+    (setq browse-url-browser-function 'w3m-browse-url)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Invoke setup functions
@@ -401,11 +441,11 @@ before visiting a new tags table"
     (ansi-color-apply-on-region (point-min) (point-max))
     (toggle-read-only))
   (add-hook 'compilation-filter-hook 'bc-color-compilation-buffer))
-
 (bc-setup-compilation-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Save desktop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun bc-setup-desktop-save-mode
+(defun bc-setup-desktop-save-mode ()
   (desktop-save-mode 1))
+(bc-setup-desktop-save-mode)
