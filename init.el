@@ -151,9 +151,8 @@ before visiting a new tags table"
   (smex-initialize)
 
   (projectile-global-mode)
-  ;; TODO Use ido as when I run projectile-switch-project with grizzl completion
-  ;; mode for a project that I have not navigated to before it fails.
-  (setq projectile-completion-system 'ido)
+  ;; TODO Add a function to add a project to projectile-known-projects
+  (setq projectile-completion-system 'grizzl)
 
   (require 'semantic/ia)
   (semantic-mode 1)

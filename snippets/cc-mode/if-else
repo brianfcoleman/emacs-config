@@ -2,11 +2,8 @@
 #name: if else statement
 #key ifel
 # --
-if ($1)
-{
+if ($1) {
   $2;
-}
-else
-{
+} else {
   $0;
 }

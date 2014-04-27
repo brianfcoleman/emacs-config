@@ -2,7 +2,5 @@
 #name: function defintition
 #key fdef
 # --
-$1
-$2($3)
-{
+$1 $2($3) {
 }

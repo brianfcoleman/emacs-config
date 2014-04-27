@@ -2,10 +2,8 @@
 #name: class declaration
 #key cls
 # --
-class ${1:`(file-name-base)`}
-{
-public:
-
+class ${1:`(file-name-base)`} {
+ public:
   $1();
 
   virtual ~$1();

@@ -2,9 +2,8 @@
 #name: namespace block
 #key ns
 # --
-namespace $1
-{
+namespace $1 {
 
-  $0
+$0
 
 }

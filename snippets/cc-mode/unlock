@@ -1,6 +1,0 @@
-#contribtor : Brian Coleman <brianfcoleman@gmail.com>
-#name: lock statement
-#key unlock
-# --
-Unlock unlock(${1:_guard});
-$0
