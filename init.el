@@ -161,7 +161,9 @@ before visiting a new tags table"
   (bc-setup-ede-project)
 
   (add-hook 'speedbar-load-hook (lambda () (require 'semantic/sb)))
-  (add-hook 'semantic-init-hook (lambda () (imenu-add-to-menubar "TAGS")))
+  (add-hook 'semantic-init-hook (lambda ()
+    (setq semantic-imenu-bucketize-file nil)
+    (imenu-add-to-menubar "TAGS")))
 
   (ad-activate 'visit-tags-table))
 
