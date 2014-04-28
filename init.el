@@ -23,13 +23,16 @@
     flex-isearch
     flx
     flx-ido
+    flycheck
     god-mode
     grizzl
     idomenu
+    ipython
     key-chord
     popup
     pos-tip
     projectile
+    python-mode
     smex
     undo-tree
     yasnippet
@@ -417,11 +420,20 @@ before visiting a new tags table"
   (show-paren-mode 1))
 (add-hook 'lisp-mode-hook 'bc-lisp-mode-hook)
 
+(defun bc-setup-python-mode ()
+  ;; TODO Python mode does not seem to activate until the second python source
+  ;; file is opened.
+  (autoload 'python-mode "python-mode" "Python Mode." t)
+  (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+  (add-to-list 'interpreter-mode-alist '("python" . python-mode)))
+(bc-setup-python-mode)
+
 (defun bc-python-mode-hook ()
   (subword-mode)
   (setq tab-width 4)
   (setq indent-tabs-mode nil)
   (setq python-indent 4))
+(add-hook 'python-mode-hook 'bc-python-mode-hook)
 
 (defun bc-sh-mode-hook ()
   (subword-mode)
