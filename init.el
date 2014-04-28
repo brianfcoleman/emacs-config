@@ -17,6 +17,7 @@
 
 (defvar bc-package-list
   '(auto-complete
+    clang-format
     evil
     evil-leader
     fill-column-indicator
