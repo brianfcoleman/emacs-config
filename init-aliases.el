@@ -47,4 +47,5 @@
   (defalias 'pd 'projectile-dired)
   (defalias 'pff 'projectile-find-file)
   (defalias 'pfd 'projectile-find-dir)
-  (defalias 'psp 'projectile-switch-project))
+  (defalias 'psp 'projectile-switch-project)
+  (defalias 'w 'save-buffer))
