@@ -140,7 +140,7 @@ before visiting a new tags table"
 
   (require 'flx-ido)
   (require 'ido-vertical-mode)
-  (autoload 'idomenu "idomenu" nil t)
+  (require 'idomenu)
   (setq ido-everywhere t)
   (setq ido-use-faces nil)
   (ido-mode 1)
@@ -161,7 +161,7 @@ before visiting a new tags table"
   (bc-setup-ede-project)
 
   (add-hook 'speedbar-load-hook (lambda () (require 'semantic/sb)))
-  (add-hook 'semantic-init-hooks (lambda () (imenu-add-to-menubar "TAGS")))
+  (add-hook 'semantic-init-hook (lambda () (imenu-add-to-menubar "TAGS")))
 
   (ad-activate 'visit-tags-table))
 
@@ -332,7 +332,7 @@ before visiting a new tags table"
 
 (defun bc-setup-windowed-mode-appearance ()
   (tool-bar-mode 1)
-  (scroll-bar-mode 1)
+  (scroll-bar-mode -1)
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (bc-setup-fonts))
 
