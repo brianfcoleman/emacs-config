@@ -277,11 +277,15 @@ before visiting a new tags table"
   (define-key god-local-mode-map (kbd "<escape>") 'bc-exit-emacs-state)
   (define-key god-local-mode-map (kbd "\\") 'bc-exit-emacs-state))
 
+(defun bc-setup-minimap-key-bindings ()
+  (define-key minibuffer-local-map (kbd "<escape>") 'exit-minibuffer))
+
 (defun bc-setup-key-bindings ()
   (bc-setup-key-chords)
   (bc-setup-evil-mode-key-bindings)
   (bc-setup-evil-leader-key-bindings)
-  (bc-setup-god-mode-key-bindings))
+  (bc-setup-god-mode-key-bindings)
+  (bc-setup-minimap-key-bindings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup wrapping
@@ -407,6 +411,7 @@ before visiting a new tags table"
 
 (defun bc-c-mode-common-hook ()
   (subword-mode)
+  (hs-minor-mode)
   (require 'google-c-style)
   (google-set-c-style))
 (add-hook 'c-mode-hook 'bc-c-mode-common-hook)
