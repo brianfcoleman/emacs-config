@@ -28,6 +28,7 @@
     god-mode
     grizzl
     idomenu
+    ido-ubiquitous
     ipython
     key-chord
     popup
@@ -143,11 +144,12 @@ before visiting a new tags table"
   (setq flex-isearch-auto t)
 
   (require 'flx-ido)
-  (require 'ido-vertical-mode)
   (require 'idomenu)
-  (setq ido-everywhere t)
+  (require 'ido-ubiquitous)
+  (require 'ido-vertical-mode)
   (setq ido-use-faces nil)
   (ido-mode 1)
+  (ido-ubiquitous-mode 1)
   (ido-vertical-mode 1)
   (flx-ido-mode 1)
 
