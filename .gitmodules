@@ -1,3 +1,0 @@
-[submodule "site-lisp/ido-vertical-mode"]
-	path = site-lisp/ido-vertical-mode
-	url = https://github.com/gempesaw/ido-vertical-mode.el.git
