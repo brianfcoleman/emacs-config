@@ -341,7 +341,7 @@ before visiting a new tags table"
 
 (defun bc-setup-fonts ()
   (cond ((eq system-type 'darwin)
-         (set-frame-font "Menlo-12" nil t))
+         (set-frame-font "Menlo-13" nil t))
         ((eq system-type 'gnu/linux)
          (set-frame-font "Liberation Mono-10" nil t))
         ((eq system-type 'windows-nt)
