@@ -32,13 +32,15 @@
     ipython
     key-chord
     popup
+    popwin
     pos-tip
     projectile
     python-mode
     smex
     undo-tree
     yasnippet
-    w3m))
+    w3m
+    zenburn-theme))
 ;; TODO Consider using irony-mode and clang-tags
 
 (defun bc-setup-package-manager ()
@@ -271,7 +273,9 @@ before visiting a new tags table"
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key "f" 'projectile-find-file)
   (evil-leader/set-key "d" 'projectile-find-dir)
-  (evil-leader/set-key "b" 'ido-switch-buffer))
+  (evil-leader/set-key "b" 'ido-switch-buffer)
+  (evil-leader/set-key "j" 'end-of-defun)
+  (evil-leader/set-key "k" 'beginning-of-defun))
 
 (defun bc-setup-god-mode-key-bindings ()
   (define-key god-local-mode-map (kbd "<escape>") 'bc-exit-emacs-state)
@@ -332,7 +336,8 @@ before visiting a new tags table"
   (line-number-mode 1)
   (column-number-mode 1)
 
-  (global-linum-mode -1))
+  (require 'popwin)
+  (popwin-mode 1))
 
 (defun bc-setup-fonts ()
   (cond ((eq system-type 'darwin)
@@ -349,7 +354,8 @@ before visiting a new tags table"
   (scroll-bar-mode -1)
   (when (eq system-type 'darwin)
     (add-to-list 'default-frame-alist '(fullscreen . fullboth)))
-  (bc-setup-fonts))
+  (bc-setup-fonts)
+  (load-theme 'zenburn))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup eshell
