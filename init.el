@@ -285,6 +285,8 @@ before visiting a new tags table"
   (define-key minibuffer-local-map (kbd "<escape>") 'exit-minibuffer))
 
 (defun bc-setup-key-bindings ()
+  (when (eq system-type 'darwin)
+    (setq mac-command-modifier 'control))
   (bc-setup-key-chords)
   (bc-setup-evil-mode-key-bindings)
   (bc-setup-evil-leader-key-bindings)
