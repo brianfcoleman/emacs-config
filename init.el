@@ -436,6 +436,7 @@ before visiting a new tags table"
 
 (defun bc-java-mode-hook ()
   (subword-mode)
+  (setq whitespace-line-column 100)
   (setq tab-width 4)
   (setq indent-tabs-mode nil)
   (setq c-basic-offset 4))
