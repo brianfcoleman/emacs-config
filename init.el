@@ -30,6 +30,7 @@
     ido-ubiquitous
     ipython
     key-chord
+    member-function
     popup
     popwin
     pos-tip
@@ -428,6 +429,10 @@ before visiting a new tags table"
 (add-hook 'c-mode-hook 'bc-c-mode-common-hook)
 (add-hook 'c++-mode-hook 'bc-c-mode-common-hook)
 (add-hook 'objc-mode-hook 'bc-c-mode-common-hook)
+
+(defun bc-c++-mode-hook ()
+  (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t))
+(add-hook 'c++-mode-hook 'bc-c++-mode-hook)
 
 (defun bc-java-mode-hook ()
   (subword-mode)
