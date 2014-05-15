@@ -300,8 +300,6 @@ before visiting a new tags table"
   (setq sentence-end-double-space nil)
   (setq fill-column 80)
 
-; TODO: Setup whitespace mode to highlight lines longer than fill-column
-
 ; TODO: Disable fci mode as it sometimes causes emacs to appear to hang by not
 ; redisplaying. I can reproduce this by opening js2-mode.el and positioning the
 ; cursor at the line defining (defconst js2-side-effecting-tokens. Then jump
@@ -312,6 +310,14 @@ before visiting a new tags table"
 ;   (setq fci-rule-color "#ffffff"))
 ; (fci-mode 1)
 )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup whitespace mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun bc-setup-whitespace-mode ()
+  (setq whitespace-line-column 80)
+  (setq whitespace-style '(face lines-tail))
+  (whitespace-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup saving
@@ -422,7 +428,8 @@ before visiting a new tags table"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-prog-mode-hook ()
   (flex-isearch-mode 1)
-  (bc-setup-wrapping))
+  (bc-setup-wrapping)
+  (bc-setup-whitespace-mode))
 (add-hook 'prog-mode-hook 'bc-prog-mode-hook)
 
 (defun bc-c-mode-common-hook ()
