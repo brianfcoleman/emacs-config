@@ -41,7 +41,7 @@
     yasnippet
     w3m
     zenburn-theme))
-;; TODO Consider using irony-mode and clang-tags
+;; TODO Consider using irony-mode, clang-tags and function-args
 
 (defun bc-setup-package-manager ()
   (require 'package)
