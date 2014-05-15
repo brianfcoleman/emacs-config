@@ -300,12 +300,14 @@ before visiting a new tags table"
   (setq sentence-end-double-space nil)
   (setq fill-column 80)
 
-  (require 'fill-column-indicator)
+; TODO: Setup whitespace mode to highlight lines longer than fill-column
+
 ; TODO: Disable fci mode as it sometimes causes emacs to appear to hang by not
 ; redisplaying. I can reproduce this by opening js2-mode.el and positioning the
 ; cursor at the line defining (defconst js2-side-effecting-tokens. Then jump
 ; to the end of the definition using end-of-defun. emacs appears to hang as
 ; the buffer it is not redisplayed.
+; (require 'fill-column-indicator)
 ; (when bc-dark-background-p
 ;   (setq fci-rule-color "#ffffff"))
 ; (fci-mode 1)
