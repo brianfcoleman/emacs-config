@@ -267,7 +267,8 @@ before visiting a new tags table"
   (define-key evil-normal-state-map "/" 'bc-search-forward)
   (define-key evil-normal-state-map "?" 'bc-search-backward)
   (define-key evil-normal-state-map "n" 'bc-repeat-last-search)
-  (define-key evil-normal-state-map "N" 'bc-repeat-last-search-reversed))
+  (define-key evil-normal-state-map "N" 'bc-repeat-last-search-reversed)
+  (define-key evil-insert-state-map (kbd "RET") 'evil-ret-and-indent))
 
 (defun bc-setup-evil-leader-key-bindings ()
   (evil-leader/set-leader "<SPC>")
