@@ -305,9 +305,13 @@ before visiting a new tags table"
 ;; Setup whitespace mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bc-setup-whitespace-mode ()
-  (setq whitespace-line-column 80)
   (setq whitespace-style '(face lines-tail))
-  (whitespace-mode 1))
+  (setq whitespace-line-column 80)
+  (whitespace-mode 1)
+  (set-face-foreground 'whitespace-line
+                       (cdr (assoc "zenburn-fg" zenburn-colors-alist)))
+  (set-face-background 'whitespace-line
+                       (cdr (assoc "zenburn-bg-1" zenburn-colors-alist))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup saving
