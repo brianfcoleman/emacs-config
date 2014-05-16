@@ -502,3 +502,8 @@ before visiting a new tags table"
 (defun bc-setup-desktop-save-mode ()
   (desktop-save-mode 1))
 (bc-setup-desktop-save-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Server
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(server-start)
