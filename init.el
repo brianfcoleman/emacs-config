@@ -159,6 +159,7 @@ before visiting a new tags table"
   (smex-initialize)
 
   (projectile-global-mode)
+  (setq projectile-enable-caching t)
   ;; TODO Add a function to add a project to projectile-known-projects
   (setq projectile-completion-system 'grizzl)
 
