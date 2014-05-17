@@ -287,7 +287,8 @@ before visiting a new tags table"
 
 (defun bc-setup-key-bindings ()
   (when (eq system-type 'darwin)
-    (setq mac-command-modifier 'control))
+    (setq mac-command-modifier 'control)
+    (setq mac-control-modifier 'meta))
   (bc-setup-key-chords)
   (bc-setup-evil-mode-key-bindings)
   (bc-setup-evil-leader-key-bindings)
