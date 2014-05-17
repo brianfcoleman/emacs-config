@@ -41,7 +41,7 @@
   (defalias 'vtt 'visit-tags-table)
   (defalias 'ib 'bc-indent-buffer)
   (defalias 'ir 'indent-region)
-  (defalias 'im 'indent-according-to-mode)
+  (defalias 'iam 'indent-according-to-mode)
   (defalias 'ne 'next-error)
   (defalias 'pe 'previous-error)
   (defalias 'pd 'projectile-dired)
