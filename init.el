@@ -28,9 +28,9 @@
     grizzl
     idomenu
     ido-ubiquitous
+    ido-vertical-mode
     ipython
     key-chord
-    member-function
     popup
     popwin
     pos-tip
@@ -41,6 +41,7 @@
     yasnippet
     w3m
     zenburn-theme))
+;; member-function does not seem to be available any more.
 ;; TODO Consider using irony-mode, clang-tags and function-args
 
 (defun bc-setup-package-manager ()
@@ -331,7 +332,8 @@ before visiting a new tags table"
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)))
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.aidl" . java-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup appearance
